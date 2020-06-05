@@ -2,6 +2,7 @@ class Wallet {
   private static _instance: Wallet
   private _currentMoney: number
   private _moneyListener: Array<(money: number) => void> = []
+  private _lock: Boolean = false
 
   constructor (baseMoney: number) {
     this._currentMoney = baseMoney
@@ -20,14 +21,28 @@ class Wallet {
   }
 
   public onAddMoney = (money: number) => {
-    const wallet = Wallet.getInstance()
-    wallet._currentMoney += money
-    wallet._notifyMoneyChange()
+    this._currentMoney += money
+    this._notifyMoneyChange()
   }
 
   public subscribeMoney = (fn: (money: number) => void) => {
-    const wallet = Wallet.getInstance()
-    wallet._moneyListener.push(fn)
+    this._moneyListener.push(fn)
+  }
+
+  // Simple locking
+  public chargeMoney = async (money: number): Promise<boolean> => {
+    if (this._lock) {
+      return false
+    }
+    this._lock = true
+    if (this._currentMoney < money) {
+      this._lock = false
+      return false
+    }
+    this._currentMoney -= money
+    this._lock = false
+    this._notifyMoneyChange()
+    return true
   }
 }
 

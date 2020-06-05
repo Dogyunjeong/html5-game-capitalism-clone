@@ -1,6 +1,7 @@
 import ItemTypes from './types/Item.type'
 import Item from './Item'
 import Wallet from './Wallet'
+import { DISPLAY_DECIMAL } from './config'
 
 const generateRevenueFn = (base: number, increasingRevenue: number) => (level: number): number => {
     return base + (level * increasingRevenue)
@@ -41,13 +42,13 @@ const init = () => {
     totalMoney.innerText = `total: 0`
     app.appendChild(totalMoney)
     wallet.subscribeMoney((money: number) => {
-        totalMoney.innerText = `total: ${money}`
+        totalMoney.innerText = `total: ${money.toFixed(DISPLAY_DECIMAL)}`
     })
     itemConfigs.forEach((itemConfig) => {
         items[itemConfig.name] = new Item(
             itemConfig,
             app,
-            (money:number) => wallet.onAddMoney(money),
+            wallet,
         )
     })
     console.log('==== Initialized ====')
