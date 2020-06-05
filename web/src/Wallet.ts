@@ -15,7 +15,7 @@ class Wallet {
 
   public static getInstance = () => {
     if (!Wallet._instance) {
-      Wallet._instance = new Wallet(0)
+      Wallet._instance = new Wallet(1000)
     }
     return Wallet._instance
   }

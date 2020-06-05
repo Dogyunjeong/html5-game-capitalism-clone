@@ -1,6 +1,6 @@
-import { DISPLAY_DECIMAL } from './config'
-import ItemTypes from "./types/Item.type"
-import Wallet from './Wallet'
+import { DISPLAY_DECIMAL } from '../config'
+import ItemTypes from '../types/Item.type'
+import Wallet from '../Wallet'
 
 class ItemPurchase {
   private _element: HTMLElement

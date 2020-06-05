@@ -1,63 +1,10 @@
 import ItemTypes from './types/Item.type'
-import Item from './Item'
 import Wallet from './Wallet'
-import { DISPLAY_DECIMAL } from './config'
-import ItemPurchase from './ItemPurchase'
-
-const generateRevenueFn = (base: number, increasingRevenue: number) => (level: number): number => {
-    return base + (level * increasingRevenue)
-}
-const generateUpgradeCostFn = (base: number, increasingRatio: number) => (level: number): number => {
-    return base + (level * level * increasingRatio)
-}
-
-const itemConfigs: ItemTypes.ItemConfig[] = [
-    {
-        name: 'Lemon',
-        productionTime: 1,
-        revenueFn: generateRevenueFn(1, 0.8),
-        upgradeCostFn: generateUpgradeCostFn(1, 0.6),
-        level: 1,
-        purchased: true,
-        price: 0,
-    },
-    {
-        name: 'Ice cream',
-        productionTime: 3,
-        revenueFn: generateRevenueFn(10, 5),
-        upgradeCostFn: generateUpgradeCostFn(10, 0.6),
-        level: 1,
-        purchased: false,
-        price: 1,
-    },
-    {
-        name: 'Bicycle',
-        productionTime: 10,
-        revenueFn: generateRevenueFn(20, 10),
-        upgradeCostFn: generateUpgradeCostFn(15, 0.6),
-        level: 1,
-        purchased: false,
-        price: 10,
-    },
-    {
-        name: 'Motor Bike',
-        productionTime: 30,
-        revenueFn: generateRevenueFn(30, 15),
-        upgradeCostFn: generateUpgradeCostFn(20, 1),
-        level: 1,
-        purchased: false,
-        price: 50,
-    },
-    {
-        name: 'Car',
-        productionTime: 60,
-        revenueFn: generateRevenueFn(50, 25),
-        upgradeCostFn: generateUpgradeCostFn(40, 2),
-        level: 1,
-        purchased: false,
-        price: 100,
-    }
-]
+import { DISPLAY_DECIMAL, itemConfigs } from './config'
+import Item from './components/Item'
+import ItemPurchase from './components/ItemPurchase'
+import CapitalismService from './services/capitalism.service'
+import HireManager from './components/HireManager'
 
 type ItemMapProperty = {
     order: number,
@@ -65,12 +12,15 @@ type ItemMapProperty = {
     item?: Item,
     itemPurchase?: ItemPurchase,
 }
-const items: { [key: string]: ItemMapProperty} = {}
-const wallet = Wallet.getInstance()
 
 
 const init = () => {
     console.log('==== Initializing start ====')
+
+    const items: { [key: string]: ItemMapProperty} = {}
+    const wallet = Wallet.getInstance()
+    const capitalismService = CapitalismService.getInstance()
+
     const app = document.getElementById('app')
     if (!app) {
         throw new Error('There is no #app element to attach game elements')
@@ -84,6 +34,7 @@ const init = () => {
     })
     const itemsWrapper = document.createElement('div')
     app.appendChild(itemsWrapper)
+    const itemConfigs = capitalismService.loadItemConfigs()
     itemConfigs.forEach((itemConfig, idx) => {
         const currentProperty: ItemMapProperty = {
             config: itemConfig,
@@ -93,6 +44,7 @@ const init = () => {
             currentProperty.item = new Item(
                 itemConfig,
                 wallet,
+                capitalismService,
             )
             itemsWrapper.appendChild(currentProperty.item.getElement())
         } else {
@@ -103,6 +55,7 @@ const init = () => {
                     items[itemConfig.name].item = new Item(
                         itemConfig,
                         wallet,
+                        capitalismService,
                     )
                     itemsWrapper.replaceChild(
                         items[itemConfig.name].item.getElement(),
@@ -117,6 +70,23 @@ const init = () => {
         }
         items[itemConfig.name] = currentProperty
     })
+
+    const hireManagerButton = document.createElement('button')
+    hireManagerButton.className = 'hire-manager-button'
+    hireManagerButton.innerText = 'Hire Manager'
+    hireManagerButton.onclick = () => {
+        let hireManagerElem: HTMLElement
+        const hireManager = new HireManager(
+            capitalismService,
+            wallet,
+            () => {
+                app.removeChild(hireManagerElem)
+            }
+        )
+        hireManagerElem = hireManager.getElement()
+        app.appendChild(hireManagerElem)
+    }
+    app.appendChild(hireManagerButton)
     console.log('==== Initialized ====')
 }
 

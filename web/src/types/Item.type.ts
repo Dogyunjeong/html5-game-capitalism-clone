@@ -7,6 +7,8 @@ namespace ItemTypes {
         level: number
         purchased: boolean
         price: number
+        hasManager: boolean,
+        managerPrice: number,
     }
 }
 
