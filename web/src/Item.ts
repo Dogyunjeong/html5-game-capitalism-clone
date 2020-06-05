@@ -1,9 +1,10 @@
+import { DISPLAY_DECIMAL } from './config'
 import ItemTypes from './types/Item.type'
+import Wallet from './Wallet'
 
 class Item {
   private _itemConfig: ItemTypes.ItemConfig
-
-  private _onAddMoney: (money: number) => void
+  private _wallet: Wallet
 
   private _parent: HTMLElement
   private _wrapper: HTMLElement
@@ -19,12 +20,12 @@ class Item {
   constructor (
     itemConfig: ItemTypes.ItemConfig,
     parent: HTMLElement,
-    onAddMoney: (money: number) => void
+    wallet: Wallet
   ) {
     this._itemConfig = itemConfig
+    this._wallet = wallet
     this._revenue = itemConfig.revenueFn(itemConfig.level)
     this._upgradeCost = itemConfig.upgradeCostFn(itemConfig.level)
-    this._onAddMoney = onAddMoney
     this._parent = parent
 
     // Initializing component
@@ -62,7 +63,7 @@ class Item {
     this.renderRevenueAndUpgradeCost()
   }
 
-  private handleUpgrade = () => {
+  private handleUpgrade = async () => {
     const level = this._itemConfig.level + 1
     this._itemConfig = {
       ...this._itemConfig,
@@ -73,7 +74,7 @@ class Item {
     this._upgradeCost = this._itemConfig.upgradeCostFn(this._itemConfig.level)
   }
 
-  private handleProduce = () => {
+  private handleProduce = async () => {
     if (this._isProducing) {
       return
     }
@@ -88,14 +89,14 @@ class Item {
     setTimeout(() => {
       clearInterval(interval)
       this._progressElem.innerText = ''
-      this._onAddMoney(this._revenue)
+      this._wallet.onAddMoney(this._revenue)
       this._isProducing = false
     }, this._itemConfig.productionTime * 1000)
   }
 
   private renderRevenueAndUpgradeCost () {
-    this._upgradeCostElem.innerText =  `upgrade: ${this._upgradeCost.toString()}`
-    this._revenueElem.innerText = `$ ${this._revenue.toString()}`
+    this._upgradeCostElem.innerText =  `upgrade: ${this._upgradeCost.toFixed(DISPLAY_DECIMAL)}`
+    this._revenueElem.innerText = `$ ${this._revenue.toFixed(DISPLAY_DECIMAL)}`
   }
 }
 
