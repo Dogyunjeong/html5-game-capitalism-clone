@@ -30,6 +30,9 @@ class HireManager {
       wrapper.className = 'hire-manager'
       wrapper.innerText = `Manager for ${itemConfig.name} (cost $${itemConfig.managerPrice})`
       wrapper.onclick = async () => {
+        if (!itemConfig.purchased) {
+          return
+        }
         const isPaid = await this._wallet.chargeMoney(itemConfig.managerPrice)
         if (!isPaid) {
           return
