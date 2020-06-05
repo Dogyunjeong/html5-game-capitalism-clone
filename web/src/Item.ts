@@ -6,8 +6,7 @@ class Item {
   private _itemConfig: ItemTypes.ItemConfig
   private _wallet: Wallet
 
-  private _parent: HTMLElement
-  private _wrapper: HTMLElement
+  private _element: HTMLElement
   private _upgradeCostElem: HTMLElement
   private _revenueElem: HTMLElement
   private _progressElem: HTMLElement
@@ -19,19 +18,17 @@ class Item {
 
   constructor (
     itemConfig: ItemTypes.ItemConfig,
-    parent: HTMLElement,
     wallet: Wallet
   ) {
     this._itemConfig = itemConfig
     this._wallet = wallet
     this._revenue = itemConfig.revenueFn(itemConfig.level)
     this._upgradeCost = itemConfig.upgradeCostFn(itemConfig.level)
-    this._parent = parent
 
     // Initializing component
-    this._wrapper = document.createElement('div')
-    this._wrapper.className = 'item'
-    this._wrapper.id = this._itemConfig.name
+    this._element = document.createElement('div')
+    this._element.className = 'item'
+    this._element.id = this._itemConfig.name
 
     const titleElem = document.createElement('div')
     titleElem.className = 'name'
@@ -52,12 +49,11 @@ class Item {
     this._progressElem = document.createElement('div')
     this._progressElem .className = 'progress'
 
-    this._wrapper.appendChild(titleElem)
-    this._wrapper.appendChild(this._revenueElem)
-    this._wrapper.appendChild(productionTime)
-    this._wrapper.appendChild(this._upgradeCostElem)
-    this._wrapper.appendChild(this._progressElem)
-    this._parent.appendChild(this._wrapper)
+    this._element.appendChild(titleElem)
+    this._element.appendChild(this._revenueElem)
+    this._element.appendChild(productionTime)
+    this._element.appendChild(this._upgradeCostElem)
+    this._element.appendChild(this._progressElem)
 
     // Render update cost and revenue
     this.renderRevenueAndUpgradeCost()
@@ -102,6 +98,8 @@ class Item {
     this._upgradeCostElem.innerText =  `upgrade: ${this._upgradeCost.toFixed(DISPLAY_DECIMAL)}`
     this._revenueElem.innerText = `$ ${this._revenue.toFixed(DISPLAY_DECIMAL)}`
   }
+
+  public getElement = () => this._element
 }
 
 export default Item

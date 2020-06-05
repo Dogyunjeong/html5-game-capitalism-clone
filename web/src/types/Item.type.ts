@@ -5,6 +5,8 @@ namespace ItemTypes {
         revenueFn: (level: number) => number
         upgradeCostFn: (level: number) => number
         level: number
+        purchased: boolean
+        price: number
     }
 }
 
