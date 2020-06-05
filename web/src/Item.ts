@@ -64,6 +64,10 @@ class Item {
   }
 
   private handleUpgrade = async () => {
+    const isPayed = await this._wallet.chargeMoney(this._upgradeCost)
+    if (!isPayed) {
+      return
+    }
     const level = this._itemConfig.level + 1
     this._itemConfig = {
       ...this._itemConfig,
