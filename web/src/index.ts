@@ -27,7 +27,7 @@ const init = () => {
     }
     const totalMoney = document.createElement('div')
     totalMoney.className = 'total money'
-    totalMoney.innerText = `total: 0`
+    totalMoney.innerText = `total: ${wallet.getMoney()}`
     app.appendChild(totalMoney)
     wallet.subscribeMoney((money: number) => {
         totalMoney.innerText = `total: ${money.toFixed(DISPLAY_DECIMAL)}`

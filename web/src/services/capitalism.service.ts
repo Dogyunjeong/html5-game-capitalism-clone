@@ -12,13 +12,16 @@ class CapitalismService {
     return CapitalismService._instance
   }
 
+  private _money: number
   private _itemConfigs: ItemTypes.ItemConfig[] = []
+  private _itemsProducingStartAt: { [key: string]: Date } = {}
   private _itemConfigListenersMap: {
     [key: string]: Array<(itemConfig: ItemTypes.ItemConfig) => void>,
   } = {}
 
   constructor () {
     this._itemConfigs = itemConfigs
+    this._money = 10000
   }
 
   private _notifyItemConfigUpdated = (itemConfig: ItemTypes.ItemConfig) => {
@@ -31,6 +34,12 @@ class CapitalismService {
   }
 
   public loadItemConfigs = () => this._itemConfigs
+
+  public loadMoney = () => this._money
+
+  public updateMoney = (money: number) => {
+    this._money = money
+  }
 
   public getItemConfigByUuid = (uuid: string) => {
     const itemConfig = this._itemConfigs.find((itemConfig) => itemConfig.uuid === uuid)

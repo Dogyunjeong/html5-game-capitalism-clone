@@ -1,16 +1,19 @@
+import CapitalismService from './services/capitalism.service'
 class Wallet {
   private static _instance: Wallet
+  private _capitalismService: CapitalismService
   private _currentMoney: number
   private _moneyListener: Array<(money: number) => void> = []
   private _lock: Boolean = false
 
   constructor (baseMoney: number) {
-    this._currentMoney = baseMoney
+    this._capitalismService = CapitalismService.getInstance()
+    this._currentMoney = this._capitalismService.loadMoney()
   }
 
   private _notifyMoneyChange = () => {
-    const wallet = Wallet.getInstance()
-    wallet._moneyListener.forEach((fn) => fn(wallet._currentMoney))
+    this._capitalismService.updateMoney(this._currentMoney)
+    this._moneyListener.forEach((fn) => fn(this._currentMoney))
   }
 
   public static getInstance = () => {
@@ -19,6 +22,8 @@ class Wallet {
     }
     return Wallet._instance
   }
+
+  public getMoney = () => this._currentMoney
 
   public onAddMoney = (money: number) => {
     this._currentMoney += money
