@@ -1,5 +1,6 @@
 namespace ItemTypes {
     export interface ItemConfig {
+        uuid: string
         name: string
         productionTime: number
         revenueFn: (level: number) => number

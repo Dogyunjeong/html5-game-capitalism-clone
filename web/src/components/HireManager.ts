@@ -28,16 +28,21 @@ class HireManager {
     itemConfigs.forEach((itemConfig) => {
       const wrapper = document.createElement('div')
       wrapper.className = 'hire-manager'
-      wrapper.innerText = `Manager for ${itemConfig.name} (cost $${itemConfig.managerPrice})`
+      if (itemConfig.hasManager) {
+        wrapper.innerText = `Hired Manager for ${itemConfig.name}`
+      } else {
+        wrapper.innerText = `Manager for ${itemConfig.name} (cost $${itemConfig.managerPrice})`
+      }
       wrapper.onclick = async () => {
         if (!itemConfig.purchased) {
+          alert('Please purchase item first')
           return
         }
         const isPaid = await this._wallet.chargeMoney(itemConfig.managerPrice)
         if (!isPaid) {
           return
         }
-        this._capitalismService.hireManager(itemConfig.name)
+        this._capitalismService.hireManager(itemConfig.uuid)
         wrapper.onclick = null
         wrapper.className += ' purchased'
         wrapper.innerText = `Hired Manager for ${itemConfig.name}`

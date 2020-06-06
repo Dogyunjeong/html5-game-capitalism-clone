@@ -31,7 +31,7 @@ class Item {
     this._upgradeCost = itemConfig.upgradeCostFn(itemConfig.level)
     this._capitalismService = capitalismService
 
-    this._capitalismService.subscribeItemConfig(itemConfig.name, this.updateConfig)
+    this._capitalismService.subscribeItemConfig(itemConfig.uuid, this.updateConfig)
 
     // Initializing component
     this._element = document.createElement('div')

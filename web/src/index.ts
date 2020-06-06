@@ -52,23 +52,21 @@ const init = () => {
                 itemConfig,
                 wallet,
                 () => {
-                    items[itemConfig.name].item = new Item(
+                    capitalismService.purchaseItem(itemConfig.uuid)
+                    items[itemConfig.uuid].item = new Item(
                         itemConfig,
                         wallet,
                         capitalismService,
                     )
                     itemsWrapper.replaceChild(
-                        items[itemConfig.name].item.getElement(),
+                        items[itemConfig.uuid].item.getElement(),
                         itemsWrapper.childNodes[idx]
                     )
-                    console.log('idx: ', idx);
-                    console.log('itemsWrapper: ', itemsWrapper);
-                    console.log('itemsWrapper.children: ', itemsWrapper.children);
                 }
             )
             itemsWrapper.appendChild(currentProperty.itemPurchase.getElement())
         }
-        items[itemConfig.name] = currentProperty
+        items[itemConfig.uuid] = currentProperty
     })
 
     const hireManagerButton = document.createElement('button')

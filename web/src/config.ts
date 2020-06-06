@@ -11,6 +11,7 @@ const generateUpgradeCostFn = (base: number, increasingRatio: number) => (level:
 
 export const itemConfigs: ItemTypes.ItemConfig[] = [
   {
+      uuid: 'uuid-lemon',
       name: 'Lemon',
       productionTime: 1,
       revenueFn: generateRevenueFn(1, 0.8),
@@ -22,6 +23,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
       managerPrice: 100
   },
   {
+      uuid: 'uuid-ice-cream',
       name: 'Ice cream',
       productionTime: 3,
       revenueFn: generateRevenueFn(10, 5),
@@ -33,6 +35,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
       managerPrice: 500
   },
   {
+      uuid: 'uuid-bicycle',
       name: 'Bicycle',
       productionTime: 10,
       revenueFn: generateRevenueFn(20, 10),
@@ -44,6 +47,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
       managerPrice: 2000
   },
   {
+      uuid: 'uuid-motor-bike',
       name: 'Motor Bike',
       productionTime: 30,
       revenueFn: generateRevenueFn(30, 15),
@@ -55,6 +59,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
       managerPrice: 4000
   },
   {
+      uuid: 'uuid-car',
       name: 'Car',
       productionTime: 60,
       revenueFn: generateRevenueFn(50, 25),

@@ -21,31 +21,45 @@ class CapitalismService {
     this._itemConfigs = itemConfigs
   }
 
-  private _notifyItemConfigUpdated = (itemName: string, itemConfig: ItemTypes.ItemConfig) => {
-    this._itemConfigListenersMap[itemName].forEach((fn) => {
+  private _notifyItemConfigUpdated = (itemConfig: ItemTypes.ItemConfig) => {
+    if (!this._itemConfigListenersMap[itemConfig.uuid]) {
+      return
+    }
+    this._itemConfigListenersMap[itemConfig.uuid].forEach((fn) => {
       fn(itemConfig)
     })
   }
 
   public loadItemConfigs = () => this._itemConfigs
 
-  public subscribeItemConfig = (itemName: string, fn: (itemConfig: ItemTypes.ItemConfig) => void) => {
-    if (!this._itemConfigListenersMap[itemName]) {
-      this._itemConfigListenersMap[itemName] = []
-    }
-    this._itemConfigListenersMap[itemName].push(fn)
+  public getItemConfigByUuid = (uuid: string) => {
+    const itemConfig = this._itemConfigs.find((itemConfig) => itemConfig.uuid === uuid)
+    return itemConfig
   }
 
-  public hireManager = (itemName: string) => {
-    const itemConfig = this._itemConfigs.find((itemConfig) => itemConfig.name === itemName)
+  public subscribeItemConfig = (uuid: string, fn: (itemConfig: ItemTypes.ItemConfig) => void) => {
+    if (!this._itemConfigListenersMap[uuid]) {
+      this._itemConfigListenersMap[uuid] = []
+    }
+    this._itemConfigListenersMap[uuid].push(fn)
+  }
+
+  public purchaseItem = (uuid: string) => {
+    const itemConfig = this._itemConfigs.find((itemConfig) => itemConfig.uuid === uuid)
+    itemConfig.purchased = true
+    this._notifyItemConfigUpdated(itemConfig)
+  }
+
+  public hireManager = (uuid: string) => {
+    const itemConfig = this._itemConfigs.find((itemConfig) => itemConfig.uuid === uuid)
     if (!itemConfig) {
-      throw new Error(`There is no item config for ${itemName}`)
+      throw new Error(`There is no item config for ${itemConfig.name}`)
     }
     if (itemConfig.hasManager) {
-      throw new Error(`Already have a manager for ${itemName}`)
+      throw new Error(`Already have a manager for ${itemConfig.name}`)
     }
     itemConfig.hasManager = true
-    this._notifyItemConfigUpdated(itemName, itemConfig)
+    this._notifyItemConfigUpdated(itemConfig)
   }
 }
 
