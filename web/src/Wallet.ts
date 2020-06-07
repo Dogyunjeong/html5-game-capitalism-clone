@@ -9,6 +9,7 @@ class Wallet {
   constructor (baseMoney: number) {
     this._capitalismService = CapitalismService.getInstance()
     this._currentMoney = this._capitalismService.loadMoney()
+    console.log('this._capitalismService.loadMoney(): ', this._capitalismService.loadMoney());
   }
 
   private _notifyMoneyChange = () => {

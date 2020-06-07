@@ -63,27 +63,27 @@ class CapitalismService {
     let additionalMoney = 0
     storeData.itemConfigs.forEach((storedItemConfig) => {
       const initialItemConfig = itemConfigs.find((itemConfig) => itemConfig.uuid === storedItemConfig.uuid)
-      const itemConfig = {
+      const itemConfig: ItemTypes.ItemConfig = {
         ...initialItemConfig,
         ...storedItemConfig,
-        productionStartAt: new Date(storedItemConfig.productionStartAt),
+        productionStartAt: null,
       }
-      const now = new Date()
-      const timeDiff: number = now.getTime() - itemConfig.productionStartAt.getTime()
-      let newSchedule = null
-      let currentProductionSeconds = null
-      if (itemConfig.hasManager) {
-        const producedAmount = Math.floor(timeDiff / itemConfig.productionTime)
-        newSchedule = new Date(now.getTime() - (timeDiff % itemConfig.productionTime))
-        additionalMoney += producedAmount * itemConfig.revenueFn(itemConfig.level)
-      } else {
-        const finished = timeDiff >= itemConfig.productionTime
-          && (itemConfig.productionStartAt.getTime() + itemConfig.productionTime > new Date(storeData.savedAt).getTime())
-        if (finished) {
-          additionalMoney += itemConfig.revenueFn(itemConfig.level)
+      if (storedItemConfig.productionStartAt) {
+        itemConfig.productionStartAt = new Date(storedItemConfig.productionStartAt)
+        const now = new Date()
+        const timeDiff: number = now.getTime() - itemConfig.productionStartAt.getTime()
+        let currentProductionSeconds = null
+        if (itemConfig.hasManager) {
+          const producedAmount = Math.floor(timeDiff / itemConfig.productionTime)
+          additionalMoney += producedAmount * itemConfig.revenueFn(itemConfig.level)
+        } else {
+          const finished = timeDiff >= itemConfig.productionTime
+            && (itemConfig.productionStartAt.getTime() + itemConfig.productionTime > new Date(storeData.savedAt).getTime())
+          if (finished) {
+            additionalMoney += itemConfig.revenueFn(itemConfig.level)
+          }
         }
       }
-      itemConfig.productionStartAt = newSchedule
       loadedItemConfigs.push(itemConfig)
     })
     this._itemConfigs = loadedItemConfigs,
@@ -97,7 +97,7 @@ class CapitalismService {
         level: itemConfig.level,
         purchased: itemConfig.purchased,
         hasManager: itemConfig.hasManager,
-        productionStartAt: itemConfig.productionStartAt?.toISOString(),
+        productionStartAt: itemConfig.productionStartAt ? itemConfig.productionStartAt.toISOString() : null,
       })),
       money: this._money,
       savedAt: new Date()

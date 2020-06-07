@@ -96,7 +96,6 @@ class Item {
         initialProgressTime = now.getTime() - this._itemConfig.productionStartAt.getTime()
       }
     }
-    this._itemConfig.productionStartAt
     const recursiveProducing = async (): Promise<() => void> => {
       await this._produceItem(initialProgressTime)
       initialProgressTime = 0
@@ -111,7 +110,9 @@ class Item {
       return
     }
     this._isProducing = true
-    this._capitalismService.updateItemProducingTime(this._itemConfig.uuid)
+    if (progressTime === 0) {
+      this._capitalismService.updateItemProducingTime(this._itemConfig.uuid)
+    }
     this._progressElem.innerText = `${(progressTime / 1000).toFixed(1)} s`
     const interval = setInterval(() => {
       progressTime += 100
