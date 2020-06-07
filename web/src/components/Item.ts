@@ -132,10 +132,10 @@ class Item {
       return
     }
     this._capitalismService.upgradeItem(this._itemConfig.uuid)
-    this._itemConfig = { ...this._capitalismService.getItemConfigByUuid(this._itemConfig.uuid)}
-    this.renderRevenueAndUpgradeCost()
+    this._itemConfig = this._capitalismService.getItemConfigByUuid(this._itemConfig.uuid)
     this._revenue = this._itemConfig.revenueFn(this._itemConfig.level)
     this._upgradeCost = this._itemConfig.upgradeCostFn(this._itemConfig.level)
+    this.renderRevenueAndUpgradeCost()
   }
 
   private handleProduce = () => {
