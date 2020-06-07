@@ -18,14 +18,14 @@ class Item {
   private _upgradeCost: number
   private _isProducing: boolean = false
   private _hasManager: boolean = false
-  private _productionStartAt: Date | null = null
 
   constructor (
     itemConfig: ItemTypes.ItemConfig,
     wallet: Wallet,
     capitalismService: CapitalismService
   ) {
-    this._itemConfig = itemConfig
+    // Copy Config
+    this._itemConfig = { ...itemConfig }
     this._wallet = wallet
     this._revenue = itemConfig.revenueFn(itemConfig.level)
     this._upgradeCost = itemConfig.upgradeCostFn(itemConfig.level)
@@ -62,6 +62,9 @@ class Item {
     this._element.appendChild(productionTime)
     this._element.appendChild(this._upgradeCostElem)
     this._element.appendChild(this._progressElem)
+    if (this._itemConfig.hasManager) {
+      this.initializeManager()
+    }
 
     // Render update cost and revenue
     this.renderRevenueAndUpgradeCost()
@@ -92,7 +95,7 @@ class Item {
   }
 
   private _produceItem = async () => new Promise((resolve) => {
-    this._productionStartAt = new Date()
+    this._capitalismService.updateItemProducingTime(this._itemConfig.uuid)
     let progressTime = 0
     this._progressElem.innerText = `${(progressTime / 1000).toFixed(1)} s`
     const interval = setInterval(() => {
@@ -112,11 +115,8 @@ class Item {
     if (!isPayed) {
       return
     }
-    const level = this._itemConfig.level + 1
-    this._itemConfig = {
-      ...this._itemConfig,
-      level,
-    }
+    this._capitalismService.upgradeItem(this._itemConfig.uuid)
+    this._itemConfig = { ...this._capitalismService.getItemConfigByUuid(this._itemConfig.uuid)}
     this.renderRevenueAndUpgradeCost()
     this._revenue = this._itemConfig.revenueFn(this._itemConfig.level)
     this._upgradeCost = this._itemConfig.upgradeCostFn(this._itemConfig.level)

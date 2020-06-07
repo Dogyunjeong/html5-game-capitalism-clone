@@ -10,6 +10,7 @@ namespace ItemTypes {
         price: number
         hasManager: boolean,
         managerPrice: number,
+        productionStartAt?: Date
     }
 }
 
