@@ -71,7 +71,6 @@ class Item {
   }
 
   private updateConfig = (itemConfig: ItemTypes.ItemConfig) => {
-    console.log('updateConfig: ', itemConfig);
     if (this._itemConfig.name !== itemConfig.name) {
       throw new Error('Service updates with different item config')
     }
