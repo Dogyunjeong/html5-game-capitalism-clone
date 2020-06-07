@@ -23,7 +23,7 @@ class Wallet {
     return Wallet._instance
   }
 
-  public getMoney = () => this._currentMoney
+  public getMoney = () => this._currentMoney.toFixed(2)
 
   public onAddMoney = (money: number) => {
     this._currentMoney += money
