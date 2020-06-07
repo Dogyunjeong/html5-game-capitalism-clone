@@ -105,7 +105,7 @@ class CapitalismService {
     localStorage.setItem(STORE_KEY, JSON.stringify(storedData))
   }
 
-  public loadItemConfigs = () => this._itemConfigs
+  public loadItemConfigs = () => this._itemConfigs.map((itemConfig) => ({ ...itemConfig }))
 
   public loadMoney = () => this._money
 
