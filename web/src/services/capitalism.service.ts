@@ -10,9 +10,9 @@ type ItemProducingScheduled = {
 }
 
 type StoredData = {
-  itemConfigs: ItemTypes.ItemConfig[]
+  itemConfigs: { uuid: string, level: number, purchased: boolean, hasManager: boolean, productionStartAt: string }[]
   money: number
-  itemProducingScheduled: { [key: string]: Date | string }
+  savedAt: Date | string
 }
 
 class CapitalismService {
@@ -28,7 +28,6 @@ class CapitalismService {
 
   private _money: number
   private _itemConfigs: ItemTypes.ItemConfig[] = []
-  private _itemProducingScheduled: ItemProducingScheduled = {}
   private _itemConfigListenersMap: {
     [key: string]: Array<(itemConfig: ItemTypes.ItemConfig) => void>,
   } = {}
@@ -65,14 +64,12 @@ class CapitalismService {
     storeData.itemConfigs.forEach((storedItemConfig) => {
       const initialItemConfig = itemConfigs.find((itemConfig) => itemConfig.uuid === storedItemConfig.uuid)
       const itemConfig = {
+        ...initialItemConfig,
         ...storedItemConfig,
-        revenueFn: initialItemConfig.revenueFn,
-        upgradeCostFn: initialItemConfig.upgradeCostFn,
+        productionStartAt: new Date(storedItemConfig.productionStartAt),
       }
-      // TODO: It leads the bug that when closed browser all item production can be done one more time
-      const itemProducedAt = new Date(storedItemConfig.productionStartAt)
       const now = new Date()
-      const timeDiff: number = (now.getTime() - itemProducedAt.getTime()) / 1000 // make it as seconds
+      const timeDiff: number = now.getTime() - itemConfig.productionStartAt.getTime()
       let newSchedule = null
       let currentProductionSeconds = null
       if (itemConfig.hasManager) {
@@ -81,11 +78,9 @@ class CapitalismService {
         additionalMoney += producedAmount * itemConfig.revenueFn(itemConfig.level)
       } else {
         const finished = timeDiff >= itemConfig.productionTime
+          && (itemConfig.productionStartAt.getTime() + itemConfig.productionTime > new Date(storeData.savedAt).getTime())
         if (finished) {
           additionalMoney += itemConfig.revenueFn(itemConfig.level)
-          newSchedule = null
-        } else {
-          newSchedule = itemProducedAt
         }
       }
       itemConfig.productionStartAt = newSchedule
@@ -97,11 +92,16 @@ class CapitalismService {
 
   private _saveData = () => {
     const storedData: StoredData = {
-      itemConfigs: this._itemConfigs,
+      itemConfigs: this._itemConfigs.map((itemConfig) => ({
+        uuid: itemConfig.uuid,
+        level: itemConfig.level,
+        purchased: itemConfig.purchased,
+        hasManager: itemConfig.hasManager,
+        productionStartAt: itemConfig.productionStartAt?.toISOString(),
+      })),
       money: this._money,
-      itemProducingScheduled: this._itemProducingScheduled
+      savedAt: new Date()
     }
-    console.log('storing data: ', storedData)
     localStorage.setItem(STORE_KEY, JSON.stringify(storedData))
   }
 
@@ -120,7 +120,7 @@ class CapitalismService {
 
   public getItemConfigByUuid = (itemUuid: string) => {
     const itemConfig = this._itemConfigs.find((itemConfig) => itemConfig.uuid === itemUuid)
-    return itemConfig
+    return { ...itemConfig }
   }
 
   public subscribeItemConfig = (itemUuid: string, fn: (itemConfig: ItemTypes.ItemConfig) => void) => {

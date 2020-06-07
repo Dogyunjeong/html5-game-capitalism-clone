@@ -17,7 +17,7 @@ class Item {
   private _revenue: number
   private _upgradeCost: number
   private _isProducing: boolean = false
-  private _hasManager: boolean = false
+  private _currentProducing: Promise<void> = null
 
   constructor (
     itemConfig: ItemTypes.ItemConfig,
@@ -45,7 +45,7 @@ class Item {
 
     const productionTime = document.createElement('div')
     productionTime.className = 'production-time'
-    productionTime.innerText = `take: ${this._itemConfig.productionTime} s`
+    productionTime.innerText = `take: ${(this._itemConfig.productionTime / 1000).toFixed(0)} s`
 
     this._revenueElem = document.createElement('div')
     this._revenueElem.className = 'revenue'
@@ -77,26 +77,41 @@ class Item {
     }
     this._itemConfig = itemConfig
     this.renderRevenueAndUpgradeCost()
-    if (itemConfig.hasManager && !this._hasManager) {
-      this._hasManager = true
+    if (itemConfig.hasManager) {
       this.initializeManager()
     }
   }
 
-  private initializeManager = () => {
+  private initializeManager = async () => {
     this._titleElem.onclick = null
     this._titleElem.innerText = `${this._itemConfig.name} (has manager)`
+    this._itemConfig = this._capitalismService.getItemConfigByUuid(this._itemConfig.uuid)
+    const now = new Date()
+    let initialProgressTime = 0
+    if (this._currentProducing) {
+      await this._currentProducing
+    } else if (this._itemConfig.productionStartAt) {
+      const underProducing = (this._itemConfig.productionStartAt.getTime() + this._itemConfig.productionTime) > now.getTime()
+      if (underProducing) {
+        initialProgressTime = now.getTime() - this._itemConfig.productionStartAt.getTime()
+      }
+    }
+    this._itemConfig.productionStartAt
     const recursiveProducing = async (): Promise<() => void> => {
-      await this._produceItem()
+      await this._produceItem(initialProgressTime)
+      initialProgressTime = 0
       return recursiveProducing()
     }
     recursiveProducing()
     return
   }
 
-  private _produceItem = async () => new Promise((resolve) => {
+  private _produceItem = async (progressTime = 0): Promise<void> => new Promise((resolve) => {
+    if (this._isProducing) {
+      return
+    }
+    this._isProducing = true
     this._capitalismService.updateItemProducingTime(this._itemConfig.uuid)
-    let progressTime = 0
     this._progressElem.innerText = `${(progressTime / 1000).toFixed(1)} s`
     const interval = setInterval(() => {
       progressTime += 100
@@ -106,8 +121,9 @@ class Item {
       clearInterval(interval)
       this._progressElem.innerText = ''
       this._wallet.onAddMoney(this._revenue)
+      this._isProducing = false
       resolve()
-    }, this._itemConfig.productionTime * 1000)
+    }, this._itemConfig.productionTime - progressTime)
   })
 
   private handleUpgrade = async () => {
@@ -122,13 +138,8 @@ class Item {
     this._upgradeCost = this._itemConfig.upgradeCostFn(this._itemConfig.level)
   }
 
-  private handleProduce = async () => {
-    if (this._isProducing) {
-      return
-    }
-    this._isProducing = true
-    await this._produceItem()
-    this._isProducing = false
+  private handleProduce = () => {
+    this._currentProducing = this._produceItem()
   }
 
   private renderRevenueAndUpgradeCost () {

@@ -13,7 +13,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
   {
       uuid: 'uuid-lemon',
       name: 'Lemon',
-      productionTime: 1,
+      productionTime: 1000,
       revenueFn: generateRevenueFn(1, 0.8),
       upgradeCostFn: generateUpgradeCostFn(1, 0.6),
       level: 1,
@@ -25,7 +25,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
   {
       uuid: 'uuid-ice-cream',
       name: 'Ice cream',
-      productionTime: 3,
+      productionTime: 3000,
       revenueFn: generateRevenueFn(10, 5),
       upgradeCostFn: generateUpgradeCostFn(10, 0.6),
       level: 1,
@@ -37,7 +37,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
   {
       uuid: 'uuid-bicycle',
       name: 'Bicycle',
-      productionTime: 10,
+      productionTime: 10000,
       revenueFn: generateRevenueFn(20, 10),
       upgradeCostFn: generateUpgradeCostFn(15, 0.6),
       level: 1,
@@ -49,7 +49,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
   {
       uuid: 'uuid-motor-bike',
       name: 'Motor Bike',
-      productionTime: 30,
+      productionTime: 60 * 60000,
       revenueFn: generateRevenueFn(30, 15),
       upgradeCostFn: generateUpgradeCostFn(20, 1),
       level: 1,
@@ -61,7 +61,7 @@ export const itemConfigs: ItemTypes.ItemConfig[] = [
   {
       uuid: 'uuid-car',
       name: 'Car',
-      productionTime: 60,
+      productionTime: 60 * 60 * 5000,
       revenueFn: generateRevenueFn(50, 25),
       upgradeCostFn: generateUpgradeCostFn(40, 2),
       level: 1,
