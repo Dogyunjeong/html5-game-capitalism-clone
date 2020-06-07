@@ -2,8 +2,8 @@ import ItemTypes from "../types/Item.type"
 import Item from "../components/Item"
 import ItemPurchase from "../components/ItemPurchase"
 import CapitalismService from "../services/capitalism.service"
-import Wallet from "../Wallet"
-import { DISPLAY_DECIMAL, itemConfigs } from "../config"
+import Wallet from "../services/Wallet"
+import { DISPLAY_DECIMAL } from "../config"
 import HireManager from "../components/HireManager"
 type ItemMapProperty = {
   order: number
@@ -16,7 +16,6 @@ class Capitalism {
   private _element: HTMLElement = null
   private _totalMoneyElem: HTMLElement = null
   private _itemsWrapperElem: HTMLElement = null
-  private _itemConfigs: ItemTypes.ItemConfig[] = []
   private _items: { [key: string]: ItemMapProperty } = {}
 
   private _capitalismService: CapitalismService = null

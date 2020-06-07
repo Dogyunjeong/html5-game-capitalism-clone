@@ -1,4 +1,4 @@
-import CapitalismService from './services/capitalism.service'
+import CapitalismService from './capitalism.service'
 class Wallet {
   private static _instance: Wallet
   private _capitalismService: CapitalismService

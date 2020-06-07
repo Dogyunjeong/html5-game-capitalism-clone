@@ -1,5 +1,5 @@
 import CapitalismService from '../services/capitalism.service'
-import Wallet from '../Wallet'
+import Wallet from '../services/Wallet'
 
 class HireManager {
   private _capitalismService: CapitalismService

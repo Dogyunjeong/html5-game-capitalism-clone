@@ -1,6 +1,6 @@
-import { DISPLAY_DECIMAL, itemConfigs } from "../config"
+import { DISPLAY_DECIMAL } from "../config"
 import ItemTypes from "../types/Item.type"
-import Wallet from "../Wallet"
+import Wallet from "../services/Wallet"
 import CapitalismService from "../services/capitalism.service"
 
 class Item {
@@ -8,11 +8,11 @@ class Item {
   private _wallet: Wallet
   private _capitalismService: CapitalismService
 
-  private _element: HTMLElement
-  private _titleElem: HTMLElement
-  private _upgradeCostElem: HTMLElement
-  private _revenueElem: HTMLElement
-  private _progressElem: HTMLElement
+  private _element: HTMLElement = null
+  private _titleElem: HTMLElement = null
+  private _upgradeCostElem: HTMLElement = null
+  private _revenueElem: HTMLElement = null
+  private _progressElem: HTMLElement = null
 
   private _revenue: number
   private _upgradeCost: number
@@ -37,36 +37,7 @@ class Item {
     )
 
     // Initializing component
-    this._element = document.createElement("div")
-    this._element.className = "item"
-    this._element.id = this._itemConfig.name
-
-    this._titleElem = document.createElement("div")
-    this._titleElem.className = "name"
-    this._titleElem.innerText = this._itemConfig.name
-    this._titleElem.onclick = this.handleProduce
-
-    const productionTime = document.createElement("div")
-    productionTime.className = "production-time"
-    productionTime.innerText = `take: ${(
-      this._itemConfig.productionTime / 1000
-    ).toFixed(0)} s`
-
-    this._revenueElem = document.createElement("div")
-    this._revenueElem.className = "revenue"
-
-    this._upgradeCostElem = document.createElement("div")
-    this._upgradeCostElem.className = "upgrade"
-    this._upgradeCostElem.onclick = this.handleUpgrade
-
-    this._progressElem = document.createElement("div")
-    this._progressElem.className = "progress"
-
-    this._element.appendChild(this._titleElem)
-    this._element.appendChild(this._revenueElem)
-    this._element.appendChild(productionTime)
-    this._element.appendChild(this._upgradeCostElem)
-    this._element.appendChild(this._progressElem)
+    this.render()
     if (this._itemConfig.hasManager) {
       this.initializeManager()
     }
@@ -161,6 +132,39 @@ class Item {
       DISPLAY_DECIMAL
     )}`
     this._revenueElem.innerText = `$ ${this._revenue.toFixed(DISPLAY_DECIMAL)}`
+  }
+
+  render() {
+    this._element = document.createElement("div")
+    this._element.className = "item"
+    this._element.id = this._itemConfig.name
+
+    this._titleElem = document.createElement("div")
+    this._titleElem.className = "name"
+    this._titleElem.innerText = this._itemConfig.name
+    this._titleElem.onclick = this.handleProduce
+
+    const productionTime = document.createElement("div")
+    productionTime.className = "production-time"
+    productionTime.innerText = `take: ${(
+      this._itemConfig.productionTime / 1000
+    ).toFixed(0)} s`
+
+    this._revenueElem = document.createElement("div")
+    this._revenueElem.className = "revenue"
+
+    this._upgradeCostElem = document.createElement("div")
+    this._upgradeCostElem.className = "upgrade"
+    this._upgradeCostElem.onclick = this.handleUpgrade
+
+    this._progressElem = document.createElement("div")
+    this._progressElem.className = "progress"
+
+    this._element.appendChild(this._titleElem)
+    this._element.appendChild(this._revenueElem)
+    this._element.appendChild(productionTime)
+    this._element.appendChild(this._upgradeCostElem)
+    this._element.appendChild(this._progressElem)
   }
 
   public getElement = () => this._element
